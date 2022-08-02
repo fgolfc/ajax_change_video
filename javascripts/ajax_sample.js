@@ -1,18 +1,37 @@
+let number = 0;
+const button = document.getElementById('btn');
+const titleArea = document.getElementById("title");
+const contentArea = document.getElementById("content");
+const videoArea = document.getElementById("video");
+
 function getData() {
-    // 1.XMLHttpRequestオブジェクトを生成する
-    const request = new XMLHttpRequest(); //-- 1
-    // 2. XMLHttpRequestオブジェクトにイベントハンドラを設定して、通信時の処理を設定する
-    request.onreadystatechange = function() { //-- 2-1
-      if (request.readyState == 4) { //-- 2-2
-        if(request.status == 200) { //-- 2-3
-          console.log(request.response); //-- 2-4
+  return new Promise(function(resolve) {
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+        if(request.status == 200) {
+          const res = request.response;
+          resolve(res);
         }
       }
     }
-    // 3. リクエストを送信
-    request.open("GET", "data.txt"); //-- 3-1
-    request.responseType = "text"; //-- 3-2
-    request.send(null); //-- 3-3
+    request.open("GET", "ajax.json");
+    request.responseType = "json"
+    request.send(null);
+  })
+}
+
+async function changeVideo() {
+  let data = []; //--4
+  if(data.length < 1) {
+    data = await getData() //--3
   }
-  
-  window.onload = getData;
+  button.addEventListener('click', e => {
+    titleArea.innerHTML = data[number].title;
+    contentArea.innerHTML = data[number].content;
+    videoArea.setAttribute("src", request.response[number].url);
+    number == 2 ? number = 0 : number++
+  })
+}
+
+window.onload = changeVideo;
